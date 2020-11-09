@@ -40,7 +40,9 @@
       </v-tab-item>
       <v-tab-item :value="'tab-2'">
         <v-card flat>
-          <v-card-text>card 2</v-card-text>
+          <div style="height:30rem">
+            <MglMap :accessToken="accessToken" :mapStyle="mapStyle" />
+          </div>
         </v-card>
       </v-tab-item>
       <v-tab-item :value="'tab-3'">
@@ -59,6 +61,10 @@ export default {
   name: "NewTree",
   components: {
     MglMap,
+  },
+  created() {
+    // We need to set mapbox-gl library here in order to use it in template
+    this.mapbox = Mapbox;
   },
   data() {
     return {
