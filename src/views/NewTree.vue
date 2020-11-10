@@ -34,16 +34,48 @@
 
     <v-tabs-items v-model="tab">
       <v-tab-item :value="'tab-1'">
-        <v-card flat>
-          <v-card-text>card 1</v-card-text>
-        </v-card>
+        <FormUser />
       </v-tab-item>
       <v-tab-item :value="'tab-2'">
         <v-card flat>
-          <div style="height:30rem">
-            <MglMap :accessToken="accessToken" :mapStyle="mapStyle" />
+          <div v-if="!gettingLocation" style="height:30rem">
+            <MglMap
+              :accessToken="accessToken"
+              :mapStyle="mapStyle"
+              :center="centerLocaton"
+              :zoom="13"
+              :attributionControl="false"
+              @mousedown="setMarker"
+            >
+              <MglMarker :coordinates="location">
+                <div slot="marker">
+                  <v-icon :size="64" color="green">mdi-tree</v-icon>
+                </div>
+
+                <MglPopup anchor="bottom">
+                  <div>Hello, I'm popup!</div>
+                </MglPopup>
+              </MglMarker>
+
+              <MglAttributionControl />
+              <MglNavigationControl position="top-right"/>
+              <MglGeolocateControl position="top-right"/>
+              <MglScaleControl position="bottom-left"
+            /></MglMap>
           </div>
         </v-card>
+        <!--   <div v-if="errorStr">
+          Sorry, but the following error occurred: {{ errorStr }}
+        </div>
+
+        <div v-if="gettingLocation">
+          <i>Getting your location...</i>
+        </div>
+ -->
+        <!--  <div v-if="location">
+          Your location data is {{ location.coords.latitude }},
+          {{ location.coords.longitude }}
+        </div> -->
       </v-tab-item>
       <v-tab-item :value="'tab-3'">
         <v-card flat>
@@ -56,24 +88,83 @@
 
 <script>
 import Mapbox from "mapbox-gl";
-import { MglMap } from "vue-mapbox";
+import {
+  MglMap,
+  MglMarker,
+  MglPopup,
+  MglAttributionControl,
+  MglNavigationControl,
+  MglGeolocateControl,
+  MglScaleControl,
+} from "vue-mapbox";
+import FormUser from "@/components/NewTree/FormUser";
 export default {
   name: "NewTree",
   components: {
     MglMap,
+    MglMarker,
+    MglAttributionControl,
+    MglNavigationControl,
+    MglGeolocateControl,
+    MglScaleControl,
+    MglPopup,
+    FormUser,
   },
   created() {
     // We need to set mapbox-gl library here in order to use it in template
     this.mapbox = Mapbox;
+    this.startLocation();
+  },
+  computed: {},
+  methods: {
+    setMarker(event) {
+      this.location = [
+        event.mapboxEvent.lngLat.lng,
+        event.mapboxEvent.lngLat.lat,
+      ];
+      console.log(event);
+    },
+    async getLocation() {
+      return new Promise((resolve, reject) => {
+        if (!("geolocation" in navigator)) {
+          reject(new Error("Geolocation is not available."));
+        }
+
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            resolve(pos);
+          },
+          (err) => {
+            reject(err);
+          }
+        );
+      });
+    },
+    async startLocation() {
+      try {
+        var geoLocation = await this.getLocation();
+
+        this.location = [
+          geoLocation.coords.longitude,
+          geoLocation.coords.latitude,
+        ];
+        this.centerLocaton = this.location;
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.gettingLocation = false;
+      }
+    },
   },
   data() {
     return {
       tab: null,
       accessToken: process.env.VUE_APP_MAPBOX_TOKEN, // your access token. Needed if you using Mapbox maps
       mapStyle: process.env.VUE_APP_MAPBOX_MAP_STYLE, // your map style
-
-      text:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+      centerLocaton: null,
+      location: null,
+      gettingLocation: true,
+      errorStr: null,
     };
   },
 };
