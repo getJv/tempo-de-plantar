@@ -31,7 +31,9 @@
 </template>
 
 <script>
-export default {};
+export default {
+  name: "FormUser",
+};
 </script>
 
 <style></style>
