@@ -7,7 +7,7 @@ const getters = {
     trees:(state) => state.trees,
 };
 const actions = {
-    fetchTrees({ commit }) { 
+    fetchTrees({ commit,dispatch }) { 
         setTimeout(() => {
 
             commit('setLoadingTree', false);
@@ -50,6 +50,7 @@ const actions = {
                 },
             ];
             commit('setTrees', result);
+            dispatch('showHeader', true);
             
          },2000)
     }

@@ -1,17 +1,12 @@
 <template>
-  <v-card flat>
-    <v-toolbar color="green darken-3" dark flat>
-      <v-btn icon>
-        <v-icon>mdi-keyboard-backspace</v-icon>
-      </v-btn>
-
-      <v-toolbar-title>Tempo de Plantar</v-toolbar-title>
-    </v-toolbar>
+  <div>
     <v-tabs
       v-model="tab"
       background-color="green darken-2"
-      fixed-tabs
+      :elevation="0"
       dark
+      grow
+      show-arrows
       icons-and-text
     >
       <v-tabs-slider></v-tabs-slider>
@@ -30,20 +25,23 @@
         Árvore
         <v-icon>mdi-tree</v-icon>
       </v-tab>
+      <v-tabs-items v-model="tab">
+        <v-tab-item :value="'tab-1'">
+          <v-card flat>
+            <v-card-text>
+              <FormUser :email.sync="email" :tab.sync="tab" />
+            </v-card-text>
+          </v-card>
+        </v-tab-item>
+        <v-tab-item :value="'tab-2'">
+          <FormMap />
+        </v-tab-item>
+        <v-tab-item :value="'tab-3'">
+          <FormTree />
+        </v-tab-item>
+      </v-tabs-items>
     </v-tabs>
-
-    <v-tabs-items v-model="tab">
-      <v-tab-item :value="'tab-1'">
-        <FormUser />
-      </v-tab-item>
-      <v-tab-item :value="'tab-2'">
-        <FormMap />
-      </v-tab-item>
-      <v-tab-item :value="'tab-3'">
-        <FormTree />
-      </v-tab-item>
-    </v-tabs-items>
-  </v-card>
+  </div>
 </template>
 
 <script>
@@ -57,13 +55,17 @@ export default {
     FormMap,
     FormTree,
   },
+  created() {
+    this.$store.dispatch("updateHeaderTitle", "Cadastrar nova árvore");
+  },
 
   data() {
     return {
       tab: null,
+      email: "",
     };
   },
 };
 </script>
 
-<style></style>
+<style scoped></style>

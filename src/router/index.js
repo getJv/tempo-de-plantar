@@ -16,6 +16,7 @@ const routes = [
     path: "/world-florest",
     name: "world-florest",
     component: WorldFlorest,
+
   },
   {
     path: "/new-tree",
@@ -34,5 +35,7 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes,
 });
+
+
 
 export default router;

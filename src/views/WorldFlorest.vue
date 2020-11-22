@@ -99,6 +99,8 @@ export default {
     } else {
       this.startLocation();
     }
+
+    this.$store.dispatch("updateHeaderTitle", "Tempo de Plantar");
   },
   computed: {
     trees() {

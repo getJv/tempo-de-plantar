@@ -31,6 +31,7 @@ export default {
     },
   },
   mounted() {
+    this.$store.dispatch("showHeader", false);
     this.$store.dispatch("fetchTrees");
   },
   data() {
