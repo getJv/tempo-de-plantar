@@ -29,18 +29,30 @@
         <v-tab-item :value="'tab-1'">
           <v-card flat>
             <v-card-text>
-              <FormUser :email.sync="email" :tab.sync="tab" />
+              <FormUser :email.sync="form.email" :tab.sync="tab" />
             </v-card-text>
           </v-card>
         </v-tab-item>
         <v-tab-item :value="'tab-2'">
-          <FormMap />
+          <FormMap
+            :tab.sync="tab"
+            :latitude.sync="form.latitude"
+            :longitude.sync="form.longitude"
+            :raioPlantio.sync="form.raioPlantio"
+            :quantidadeMudas.sync="form.quantidadeMudas"
+          />
         </v-tab-item>
         <v-tab-item :value="'tab-3'">
-          <FormTree />
+          <FormTree
+            :dataPlantio.sync="form.dataPlantio"
+            :especieNativaCerrado.sync="form.especieNativaCerrado"
+            :especie.sync="form.especie"
+            :localDePlantio.sync="form.localDePlantio"
+          />
         </v-tab-item>
       </v-tabs-items>
     </v-tabs>
+    {{ form }}
   </div>
 </template>
 
@@ -62,7 +74,17 @@ export default {
   data() {
     return {
       tab: null,
-      email: "",
+      form: {
+        email: "",
+        latitude: 0,
+        longitude: 0,
+        raioPlantio: 0,
+        quantidadeMudas: 0,
+        dataPlantio: "",
+        especieNativaCerrado: "",
+        especie: "",
+        localDePlantio: "",
+      },
     };
   },
 };
