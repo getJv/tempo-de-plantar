@@ -1,58 +1,83 @@
 <template>
   <div>
-    <v-tabs
-      v-model="tab"
-      background-color="green darken-2"
-      :elevation="0"
-      dark
-      grow
-      show-arrows
-      icons-and-text
-    >
-      <v-tabs-slider></v-tabs-slider>
+    <div v-if="!saving">
+      <v-tabs
+        v-model="tab"
+        background-color="green darken-2"
+        :elevation="0"
+        dark
+        grow
+        show-arrows
+        icons-and-text
+      >
+        <v-tabs-slider></v-tabs-slider>
 
-      <v-tab href="#tab-1">
-        Voluntário
-        <v-icon>mdi-account-box</v-icon>
-      </v-tab>
+        <v-tab href="#tab-1">
+          Voluntário
+          <v-icon>mdi-account-box</v-icon>
+        </v-tab>
 
-      <v-tab href="#tab-2">
-        Local
-        <v-icon>mdi-map-marker</v-icon>
-      </v-tab>
+        <v-tab href="#tab-2">
+          Local
+          <v-icon>mdi-map-marker</v-icon>
+        </v-tab>
 
-      <v-tab href="#tab-3">
-        Árvore
-        <v-icon>mdi-tree</v-icon>
-      </v-tab>
-      <v-tabs-items v-model="tab">
-        <v-tab-item :value="'tab-1'">
-          <v-card flat>
-            <v-card-text>
-              <FormUser :email.sync="form.email" :tab.sync="tab" />
-            </v-card-text>
-          </v-card>
-        </v-tab-item>
-        <v-tab-item :value="'tab-2'">
-          <FormMap
-            :tab.sync="tab"
-            :latitude.sync="form.latitude"
-            :longitude.sync="form.longitude"
-            :raioPlantio.sync="form.raioPlantio"
-            :quantidadeMudas.sync="form.quantidadeMudas"
-          />
-        </v-tab-item>
-        <v-tab-item :value="'tab-3'">
-          <FormTree
-            :dataPlantio.sync="form.dataPlantio"
-            :especieNativaCerrado.sync="form.especieNativaCerrado"
-            :especie.sync="form.especie"
-            :localDePlantio.sync="form.localDePlantio"
-          />
-        </v-tab-item>
-      </v-tabs-items>
-    </v-tabs>
-    {{ form }}
+        <v-tab href="#tab-3">
+          Árvore
+          <v-icon>mdi-tree</v-icon>
+        </v-tab>
+        <v-tabs-items v-model="tab">
+          <v-tab-item :value="'tab-1'">
+            <v-card flat>
+              <v-card-text>
+                <FormUser
+                  ref="formUser"
+                  :email.sync="form.email"
+                  :tab.sync="tab"
+                />
+              </v-card-text>
+            </v-card>
+          </v-tab-item>
+          <v-tab-item :value="'tab-2'">
+            <FormMap
+              ref="formMap"
+              :tab.sync="tab"
+              :latitude.sync="form.latitude"
+              :longitude.sync="form.longitude"
+              :raioPlantio.sync="form.raioPlantio"
+              :quantidadeMudas.sync="form.quantidadeMudas"
+            />
+          </v-tab-item>
+          <v-tab-item :value="'tab-3'">
+            <FormTree
+              ref="formTree"
+              :dataPlantio.sync="form.dataPlantio"
+              :especieNativaCerrado.sync="form.especieNativaCerrado"
+              :especie.sync="form.especie"
+              :localDePlantio.sync="form.localDePlantio"
+            />
+          </v-tab-item>
+        </v-tabs-items>
+      </v-tabs>
+      <center v-if="tab === 'tab-3'">
+        <v-btn
+          @click="isFormValid"
+          width="300"
+          dark
+          color="green darken-3 elevation-0"
+        >
+          Salvar os dados
+        </v-btn>
+      </center>
+    </div>
+    <v-overlay v-else>
+      <v-row justify="center">
+        <v-progress-circular indeterminate size="64"></v-progress-circular>
+      </v-row>
+      <v-row justify="center">
+        <div class="subtitle">Registrando a nova árvore ...</div>
+      </v-row>
+    </v-overlay>
   </div>
 </template>
 
@@ -70,10 +95,24 @@ export default {
   created() {
     this.$store.dispatch("updateHeaderTitle", "Cadastrar nova árvore");
   },
+  methods: {
+    isFormValid() {
+      const fields = Object.values(this.$refs);
+      fields.forEach((field) => field.$v.$touch());
 
+      if (fields.some((field) => field.$v.$invalid == true)) return;
+      this.saving = true;
+      setTimeout(() => {
+        this.$store.dispatch("createTree", this.form);
+        this.saving = false;
+        this.$router.push({ name: "tree", params: { tree: this.form } });
+      }, 2000);
+    },
+  },
   data() {
     return {
       tab: null,
+      saving: false,
       form: {
         email: "",
         latitude: 0,
@@ -81,7 +120,7 @@ export default {
         raioPlantio: 0,
         quantidadeMudas: 0,
         dataPlantio: "",
-        especieNativaCerrado: "",
+        especieNativaCerrado: false,
         especie: "",
         localDePlantio: "",
       },

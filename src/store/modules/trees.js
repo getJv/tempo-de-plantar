@@ -7,6 +7,35 @@ const getters = {
     trees:(state) => state.trees,
 };
 const actions = {
+    createTree({ commit },newObj) { 
+        
+
+            //commit('setCreatingTree', true);
+            let obj = [
+                {
+                    voluntieer: {
+                        name: 'Jhonatan - Só um Sisteminha',
+                        image: '',
+                    },
+                    species: {
+                        name: newObj.especie,
+                    },
+                    data: newObj.dataPlantio,
+                    planted_number: newObj.quantidadeMudas,
+                    planted_area: newObj.raioPlantio,
+                    location: {
+                        lat: newObj.latitude,
+                        lng: newObj.longitude,
+                    },
+                    local_type: newObj.localDePlantio,
+                    isSavanna: newObj.especieNativaCerrado
+                },
+            ];
+            commit('addTree', obj);
+            //commit('setCreatingTree', false);
+            
+       
+    },
     fetchTrees({ commit,dispatch }) { 
         setTimeout(() => {
 
@@ -57,12 +86,13 @@ const actions = {
 };
 const mutations = {
     setLoadingTree(state, newValue) { 
-        
         state.loadingTrees = newValue;
-        
     },
     setTrees( state , newValue) { 
         state.trees = newValue;
+    },
+    addTree( state , newTree) { 
+        state.trees.push(newTree) ;
     },
 };
 

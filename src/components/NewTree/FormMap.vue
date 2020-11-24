@@ -55,11 +55,7 @@
       </v-col>
       <v-col cols="12">
         <v-btn
-          v-if="
-            !this.$v.$invalid &&
-              _quantidadeMudas > 0 &&
-              _quantidadeMudasErrors > 0
-          "
+          v-if="!this.$v.$invalid && _raioPlantio > 0 && _quantidadeMudas > 0"
           dark
           color="green darken-3 elevation-0"
           block
@@ -75,7 +71,7 @@
 <script>
 import Mapbox from "mapbox-gl";
 import { validationMixin } from "vuelidate";
-import { required, numeric } from "vuelidate/lib/validators";
+import { required, numeric, minValue } from "vuelidate/lib/validators";
 import {
   MglMap,
   MglMarker,
@@ -110,10 +106,12 @@ export default {
     _raioPlantio: {
       required,
       numeric,
+      minValue: minValue(1),
     },
     _quantidadeMudas: {
       required,
       numeric,
+      minValue: minValue(1),
     },
   },
   components: {
@@ -209,6 +207,8 @@ export default {
       if (!this.$v._raioPlantio.$dirty) return errors;
       !this.$v._raioPlantio.required && errors.push("Campo obrigatório.");
       !this.$v._raioPlantio.numeric && errors.push("Apenas valores numéricos");
+      !this.$v._raioPlantio.minValue &&
+        errors.push("O raio de plantio deve ser maior que 1 metro");
       return errors;
     },
     _quantidadeMudasErrors() {
@@ -217,6 +217,8 @@ export default {
       !this.$v._quantidadeMudas.required && errors.push("Campo obrigatório.");
       !this.$v._quantidadeMudas.numeric &&
         errors.push("Apenas valores numéricos");
+      !this.$v._raioPlantio.minValue &&
+        errors.push("Pelo menos 1 muda deve ser informada");
       return errors;
     },
   },
