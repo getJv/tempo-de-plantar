@@ -2,7 +2,7 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home";
 import NewTree from "../views/NewTree";
-import Tree from "../views/Tree";
+import Tree from "../views/Tree/Tree";
 import WorldFlorest from "../views/WorldFlorest";
 
 Vue.use(VueRouter);
@@ -25,7 +25,7 @@ const routes = [
     component: NewTree,
   },
   {
-    path: "/tree",
+    path: "/tree/:id",
     name: "tree",
     component: Tree,
   },

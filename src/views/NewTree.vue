@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="!saving">
+    <div v-if="!$store.getters.creatingTree">
       <v-tabs
         v-model="tab"
         background-color="green darken-2"
@@ -101,12 +101,17 @@ export default {
       fields.forEach((field) => field.$v.$touch());
 
       if (fields.some((field) => field.$v.$invalid == true)) return;
-      this.saving = true;
-      setTimeout(() => {
-        this.$store.dispatch("createTree", this.form);
-        this.saving = false;
-        this.$router.push({ name: "tree", params: { tree: this.form } });
-      }, 2000);
+      this.$store.dispatch("createTree", this.form);
+    },
+  },
+  watch: {
+    "$store.getters.creatingTree"(newValue, oldValue) {
+      if (oldValue && !newValue) {
+        const lastObj = this.$store.getters.trees[
+          this.$store.getters.trees.length - 1
+        ];
+        this.$router.push({ name: "tree", params: { tree: lastObj } });
+      }
     },
   },
   data() {

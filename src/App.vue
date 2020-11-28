@@ -15,12 +15,7 @@
 
       <v-spacer></v-spacer>
     </v-app-bar>
-    <v-navigation-drawer
-      v-if="$store.getters.showHeader"
-      v-model="drawer"
-      absolute
-      temporary
-    >
+    <v-navigation-drawer v-model="drawer" absolute temporary>
       <v-list nav dense>
         <v-list-item-group
           v-model="group"
@@ -41,12 +36,14 @@
           </v-list-item>
 
           <v-divider></v-divider>
-          <v-list-item>
+          <v-list-item to="/">
             <v-list-item-title>Home</v-list-item-title>
           </v-list-item>
 
           <v-list-item>
-            <v-list-item-title>Plantar uma muda</v-list-item-title>
+            <v-list-item-title to="/world-florest">
+              Plantar uma muda
+            </v-list-item-title>
           </v-list-item>
 
           <v-list-item>

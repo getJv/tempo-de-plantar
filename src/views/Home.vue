@@ -18,6 +18,7 @@
 import logo from "@/assets/logo.jpeg";
 export default {
   name: "home",
+
   computed: {
     loading() {
       return this.$store.getters.loadingTrees;
@@ -26,11 +27,13 @@ export default {
   watch: {
     loading(newValue) {
       if (!newValue) {
-        this.$router.push("world-florest");
+        setTimeout(() => {
+          this.$router.push("world-florest");
+        }, 1500);
       }
     },
   },
-  mounted() {
+  created() {
     this.$store.dispatch("showHeader", false);
     this.$store.dispatch("fetchTrees");
   },

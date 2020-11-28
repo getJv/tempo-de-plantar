@@ -1,25 +1,24 @@
+import firebase from "../../firebaseConfig";
+const db = firebase.firestore();
 const state = {
     loadingTrees: true,
+    creatingTree: false,
     trees:[],
 };
 const getters = {
     loadingTrees: (state) => state.loadingTrees,
+    creatingTree: (state) => state.creatingTree,
     trees:(state) => state.trees,
 };
 const actions = {
-    createTree({ commit },newObj) { 
+    async createTree({ commit }, newObj) { 
         
 
-            //commit('setCreatingTree', true);
-            let obj = [
-                {
-                    voluntieer: {
-                        name: 'Jhonatan - Só um Sisteminha',
-                        image: '',
-                    },
-                    species: {
-                        name: newObj.especie,
-                    },
+        try {
+            commit('setCreatingTree', true); 
+            let obj = {
+                    voluntieer: newObj.email ,
+                    species: newObj.especie,
                     data: newObj.dataPlantio,
                     planted_number: newObj.quantidadeMudas,
                     planted_area: newObj.raioPlantio,
@@ -29,69 +28,49 @@ const actions = {
                     },
                     local_type: newObj.localDePlantio,
                     isSavanna: newObj.especieNativaCerrado
-                },
-            ];
+            }; 
+            
+            await db.collection("trees").add(obj);
+            
             commit('addTree', obj);
-            //commit('setCreatingTree', false);
             
-       
+         }
+        catch (error) { 
+            console.log(error.response)
+        }
+        finally { 
+            commit('setCreatingTree', false);
+        }
     },
-    fetchTrees({ commit,dispatch }) { 
-        setTimeout(() => {
-
-            commit('setLoadingTree', false);
-            let result = [
-                {
-                    voluntieer: {
-                        name: 'Jhonatan - Só um Sisteminha',
-                        image: '',
-                    },
-                    species: {
-                        name: 'Pequi',
-                    },
-                    data: '2020-05-03',
-                    planted_number: 10,
-                    planted_area: 1,
-                    location: {
-                        lat: -15.7869464,
-                        lng: -47.8629339,
-                    },
-                    local_type: 'Aréa urbana',
-                    biome: 'Cerrado'
-                },
-                {
-                    voluntieer: {
-                        name: 'Marcelo Mapinha geografico',
-                        image: '',
-                    },
-                    species: {
-                        name: 'Pequi',
-                    },
-                    data: '2020-05-03',
-                    planted_number: 10,
-                    planted_area: 1,
-                    location: {
-                        lat: -15.788784,
-                        lng: -47.8621507,
-                    },
-                    local_type: 'Aréa urbana',
-                    biome: 'Cerrado'
-                },
-            ];
-            commit('setTrees', result);
-            dispatch('showHeader', true);
+    async fetchTrees( { commit  }) { 
+        try {
+            commit('setLoadingTree', true);
+            let trees = [];
+            const querySnapshot = await db.collection("trees").get();
+            querySnapshot.forEach((doc) => {
+                trees.push({id:doc.id, ...doc.data()  }); 
+            });
+            commit('setTrees', trees);
             
-         },2000)
+          
+        } catch (error) {
+           console.log(error.response)
+        } finally { 
+            commit('setLoadingTree', false);
+        }
     }
 };
 const mutations = {
     setLoadingTree(state, newValue) { 
         state.loadingTrees = newValue;
     },
+    setCreatingTree(state, newValue) { 
+        state.creatingTree = newValue;
+    },
     setTrees( state , newValue) { 
         state.trees = newValue;
     },
-    addTree( state , newTree) { 
+    addTree(state, newTree) { 
         state.trees.push(newTree) ;
     },
 };

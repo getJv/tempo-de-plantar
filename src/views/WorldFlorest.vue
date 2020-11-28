@@ -19,7 +19,26 @@
           </div>
 
           <MglPopup anchor="bottom">
-            <div>Hello, I'm popup!</div>
+            <v-card class="pa-2" flat>
+              <div class="body-1 font-weight-bold">
+                Plantio de {{ tree.species }}
+              </div>
+              <div class="caption mb-5">Criado em: {{ tree.data }}</div>
+              <div class="body-2">
+                {{ tree.planted_number }} árvores em {{ tree.planted_area }}m²
+              </div>
+
+              <v-btn
+                class="mt-5"
+                small
+                block
+                outlined
+                color="green"
+                @click="visit(tree)"
+              >
+                Visitar
+              </v-btn>
+            </v-card>
           </MglPopup>
         </MglMarker>
         <span v-if="showArea">
@@ -28,7 +47,7 @@
             :key="tree.id"
             :latitude="tree.location.lat"
             :longitude="tree.location.lng"
-            :radiusFromMeters="300"
+            :radiusFromMeters="tree.planted_area"
           />
         </span>
       </MglMap>
@@ -99,7 +118,7 @@ export default {
     } else {
       this.startLocation();
     }
-
+    this.$store.dispatch("showHeader", true);
     this.$store.dispatch("updateHeaderTitle", "Tempo de Plantar");
   },
   computed: {
@@ -108,6 +127,9 @@ export default {
     },
   },
   methods: {
+    visit(tree) {
+      this.$router.push({ name: "tree", params: { tree: tree } });
+    },
     async getLocation() {
       return new Promise((resolve, reject) => {
         if (!("geolocation" in navigator)) {
